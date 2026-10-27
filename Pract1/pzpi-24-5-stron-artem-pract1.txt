@@ -1,1 +1,674 @@
-.
+Харківський національний університет радіоелектроніки
+Факультет комп’ютерних наук
+Кафедра програмної інженерії
+
+ЗВІТ
+до практичного завдання №1
+з дисципліни «Аналіз та рефакторинґ коду»
+на тему: «Правила оформлення програмного коду в мові PHP»
+
+Виконав
+ст. гр. ПЗПІ-24-5
+Строн Артем
+
+Перевірив
+ст. викладач катедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+
+
+
+
+
+Харків 2026
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсія звітуОпис змін та виправлень121.10.20260.1Створено розділ «Завдання»223.10.20260.1Створено розділ «Опис Виконаної роботи»324.10.20260.1Створено розділ «Висновки»425.10.20260.1Створено розділ «Використані джерела»     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+
+2 ЗАВДАННЯ
+     Студент повинен обрати мову програмування, дослідити основні рекомендації для написання якісного коду у цій мові, продемонструвати ці рекомендації на прикладах коду, обґрунтувати кожну рекомендацію і надати детальні пояснення. Для кожного прикладу мають бути наведені фрагменти коду.
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+
+     
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     3.1 Загальні відомості
+     У роботі розглянуто правила оформлення програмного коду мовою PHP на основі стандартів PSR-1і PSR-12, а також практики документування коду за допомогою PHPDoc. Єдиний стиль оформлення робить код передбачуваним: розробник, який відкриває чужий файл, одразу розуміє його структуру. Для кожного правила нижче наведено рекомендацію, її опис і приклад коду, що відповідає стандарту.
+     3.2 Правила оформлення програмного коду
+     Рекомендація 1: Дотримуйтесь стандартної структури файлу.
+     Опис: Файл починається з відкривного тегу <?php на першому рядку, без жодного тексту перед ним. Далі йдуть порожній рядок, директива declare(strict_types=1);, порожній рядок, namespace, порожній рядок, блок імпортів use?, порожній рядок і оголошення класу. Закривний тег ?> у файлах, що містять лише PHP-код, не використовується. Файл зберігається в кодуванні UTF-8 без BOM, закінчується одним символом переходу на новий рядок, а в кінці рядків немає зайвих пробілів. За PSR-1 файл або оголошує сутності, або виконує дії з побічними ефектами, але не робить і те, і те одночасно.
+     
+      <?php
+      
+      declare(strict_types=1);
+      
+      namespace App\Service;
+      
+      use App\Entity\Order;
+      use InvalidArgumentException;
+      
+      final class OrderValidator
+      {
+          // ...
+      }
+      
+     Рекомендація 2: Вмикайте строгу типізацію та вказуйте типи скрізь.
+     Опис: Директива declare(strict_types=1); забороняє неявне перетворення типів. Без неї рядок "10" мовчки перетворюється на число 10, а помилка в типі даних проявляється лише згодом. Типи слід вказувати для всіх параметрів, значень, що повертаються, і властивостей класу. Якщо метод нічого не повертає, використовується : void.
+      
+      <?php
+       
+      declare(strict_types=1);
+       
+      namespace App\Entity;
+       
+      final class Product
+      {
+          private string $name;
+          private float $price;
+       
+          public function __construct(string $name, float $price)
+          {
+              $this->name = $name;
+              $this->price = $price;
+          }
+       
+          public function getName(): string
+          {
+              return $this->name;
+          }
+       
+          public function getPrice(): float
+          {
+              return $this->price;
+          }
+      }
+      
+     Рекомендація 3: Використовуйте осмислені назви змінних, методів і класів.
+     Опис: Правильне іменування допомагає іншим розробникам легко зрозуміти призначення коду. Уникайте абревіатур і коротких імен без значення. За PSR-1 класи називаються в стилі StudlyCaps (PriceCalculator), методи й змінні в стилі camelCase (applyDiscount, $finalPrice), а константи записуються великими літерами із підкресленням (MAX_DISCOUNT_PERCENT). Назва методу має починатися з дієслова і описувати дію.
+     Приклад поганого оформлення:
+      
+      public function calc(float $a, float $b): float
+      {
+          return $a * (1 - $b / 100);
+      }
+      
+     Приклад, що відповідає стандарту:
+     
+      public function applyDiscount(float $price, float $percent): float
+      {
+          return $price * (1 - $percent / 100);
+      }
+      
+     Рекомендація 4: Дотримуйтесь правил відступів, довжини рядка та розташування фігурних дужок.
+     Опис: Відступ складає чотири пробіли, символи табуляції не використовуються. Рекомендована довжина рядка становить до 80 символів, а межа, яку не варто перевищувати, дорівнює 120. Відкривна фігурна дужка класу та методу ставиться на новому рядку, а в керуючих конструкціях (if, foreach, while) на тому ж рядку, що й умова. Усі властивості та методи повинні мати явно вказаний модифікатор видимості (public, protected, private). Модифікатори final та abstract ставляться перед модифікатором видимості, а static після нього. Якщо сигнатура не вміщається в рядок, кожен параметр переноситься на окремий рядок, а закривна дужка, тип значення та відкривна фігурна дужка стоять в одному рядку: ): float {.
+     Приклад (сигнатура вміщається в один рядок, тому її не переносять):
+     
+      <?php
+       
+      declare(strict_types=1);
+       
+      namespace App\Service;
+       
+      final class PriceCalculator
+      {
+          public function applyDiscount(float $price, float $percent): float
+          {
+              return $price * (1 - $percent / 100);
+          }
+      }
+      
+     Приклад багаторядкової сигнатури (коли параметрів багато):
+     
+      public function createInvoice(
+          Customer $customer,
+          array $items,
+          float $discountPercent,
+          string $currency
+      ): Invoice {
+          // ...
+      }
+      
+     Рекомендація 5: Оголошуйте класи як final, якщо спадкування не передбачене.
+     Опис: Модифікатор final забороняє наслідування класу. Це робить поведінку класу передбачуваною: ніхто не змінить його логіку у класі-нащадку, а зміни всередині класу не зламають невідомих спадкоємців. Це не вимога PSR-12, а широко прийнята практика. Якщо розширення дійсно потрібне, замість спадкування краще використовувати інтерфейси та композицію.
+     Приклад:
+     
+      final class PriceCalculator
+      {
+          // ...
+      }
+     
+     Рекомендація 6: Оформлюйте керуючі конструкції за стандартом.
+     Опис: Після ключового слова (if, foreach, switch) ставиться один пробіл, після відкривної дужки та перед закривною пробілів немає. Тіло конструкції завжди беруть у фігурні дужки, навіть якщо воно складається з одного рядка. Ключові слова true, false та null пишуться малими літерами. Перевірку граничних випадків краще виконувати на початку методу і одразу виходити з нього, не вкладаючи основну логіку у зайві рівні if.
+     Приклад:
+     
+      public function applyDiscount(float $price, float $percent): float
+      {
+          if ($percent < 0.0 || $percent > 100.0) {
+              throw new InvalidArgumentException('Percent must be between 0 and 100.');
+          }
+       
+          return $price * (1 - $percent / 100);
+      }
+      
+     Рекомендація 7: Документуйте код за допомогою PHPDoc, але не дублюйте очевидне.
+     Опис: PHPDoc-коментар має додавати інформацію, якої не можна виразити типами мови: тип елементів масиву (OrderItem[]), допустимий діапазон значень, одиниці виміру, винятки, посилання на пов'язані сутності. Коментар, що повторює сигнатуру, лише збільшує обсяг коду. PHPDoc не виконується інтерпретатором, але використовується IDE для підказок та статичними аналізаторами (PHPStan, Psalm) для перевірки типів. Теги в блоці групуються й вирівнюються, групи розділяються порожніми рядками.
+     Приклад поганого оформлення:
+     
+      /**
+       * Повертає ім'я.
+       * @return string
+       */
+      public function getName(): string
+      {
+          return $this->name;
+      }
+      
+     Приклад, що відповідає стандарту:
+     
+      /**
+       * Розраховує підсумкову вартість замовлення з урахуванням знижки.
+       *
+       * @param OrderItem[] $items   Позиції замовлення (не порожній масив)
+       * @param float       $percent Відсоток знижки від 0 до 100
+       *
+       * @return float Підсумкова сума в гривнях
+       *
+       * @throws InvalidArgumentException Якщо знижка виходить за межі 0-100
+       *
+       * @see PriceCalculator::applyDiscount()
+       */
+      public function calculateTotal(array $items, float $percent = 0.0): float
+      {
+          // ...
+      }
+      
+     Рекомендація 8: Оформлюйте модульні тести за схемою Arrange-Act-Assert.
+     Опис: Клас тесту має суфікс Test і розташовується в просторі імен, що віддзеркалює структуру основного коду (App\Tests\Service). Назва тестового методу починається з test і описує перевіряну поведінку. Тіло тесту розділяється на три блоки: підготовка даних, виклик перевіряного коду і перевірка результату. Для порівняння дробових чисел використовується assertEqualsWithDelta, оскільки через особливості представлення чисел з рухомою комою точна рівність не гарантується. Перевірка виняткових ситуацій оформлюється окремим тестом із викликом expectException.
+     Приклад:
+     
+      <?php
+       
+      declare(strict_types=1);
+       
+      namespace App\Tests\Service;
+       
+      use App\Service\PriceCalculator;
+      use InvalidArgumentException;
+      use PHPUnit\Framework\TestCase;
+       
+      final class PriceCalculatorTest extends TestCase
+      {
+          public function testApplyDiscountReducesPriceByGivenPercent(): void
+          {
+              // Arrange
+              $calculator = new PriceCalculator();
+       
+              // Act
+              $result = $calculator->applyDiscount(200.0, 10.0);
+       
+              // Assert
+              $this->assertEqualsWithDelta(180.0, $result, 0.001);
+          }
+       
+          public function testApplyDiscountThrowsExceptionForNegativePercent(): void
+          {
+              $this->expectException(InvalidArgumentException::class);
+       
+              (new PriceCalculator())->applyDiscount(200.0, -5.0);
+          }
+      }
+      
+     3.3 Програмні інструменти
+     Дотримання правил вручну ненадійне, тому перевірку стилю доцільно автоматизувати. У роботі розглянуто такі інструменти.
+     PHP_CodeSniffer аналізує код на відповідність обраному стандарту й показує список порушень із номерами рядків. Утиліта phpcbf автоматично виправляє частину порушень. Приклад запуску:
+     
+      vendor/bin/phpcs --standard=PSR12 src tests
+      vendor/bin/phpcbf --standard=PSR12 src tests
+      
+     PHP-CS-Fixer автоматично переформатовує код відповідно до набору правил. Налаштування зберігаються у файлі .php-cs-fixer.dist.php в корені проєкту:
+     
+      <?php
+       
+      declare(strict_types=1);
+       
+      $finder = PhpCsFixer\Finder::create()
+          ->in([__DIR__ . '/src', __DIR__ . '/tests']);
+       
+      return (new PhpCsFixer\Config())
+          ->setRiskyAllowed(true)
+          ->setRules([
+              '@PSR12' => true,
+              'declare_strict_types' => true,
+          ])
+          ->setFinder($finder);
+      
+     PHPStan та Psalm. Статичні аналізатори перевіряють типи й логіку без запуску програми: виявляють виклики неіснуючих методів, неправильні типи аргументів, можливі значення null. Вони використовують PHPDoc-анотації, наприклад OrderItem[], тому добре написана документація безпосередньо покращує результати аналізу. Приклад запуску: vendor/bin/phpstan analyse src tests --level=8.
+     PHPUnit. Фреймворк для модульного тестування, за допомогою якого перевіряється коректність прикладів. Запуск: vendor/bin/phpunit.
+     Composer scripts. Усі команди зручно зібрати в розділі scripts файлу composer.json, щоб запускати перевірки однією командою:
+     
+      {
+          "scripts": {
+              "cs:check": "phpcs --standard=PSR12 src tests",
+              "cs:fix": "phpcbf --standard=PSR12 src tests",
+              "stan": "phpstan analyse src tests --level=8",
+              "test": "phpunit"
+          }
+      }
+      
+     Після цього перевірки виконуються командами composer cs:check, composer stan, composer test. Цей самий набір команд можна запускати в системі безперервної інтеграції (наприклад, GitHub Actions), щоб код, який не відповідає стандарту, не потрапляв до основної гілки.
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+4 ВИСНОВКИ
+     У ході виконання роботи було розглянуто основні правила оформлення програмного коду мовою PHP на основі стандартів PSR-1 та PSR-12: структуру файлу, правила розташування фігурних дужок, відступів і порожніх рядків, а також обмеження на довжину рядка. Було проаналізовано угоди про іменування: класи записуються в стилі StudlyCaps, методи в camelCase, константи великими літерами із символом підкреслення. Окремо розглянуто використання строгої типізації, оголошення типів параметрів і значень, що повертаються, а також модифікатора final для класів. Було досліджено правила документування коду за допомогою PHPDoc. Показано різницю між коментарем, що дублює сигнатуру, і коментарем, що доповнює її інформацією, яку неможливо передати типами мови. Було розглянуто принципи оформлення модульних тестів у PHPUnit. Отримано навички аналізу коду на відповідність стандартам оформлення, виявлення типових порушень та їх виправлення. Зроблено висновок, що єдиний стиль оформлення коду підвищує його читабельність, спрощує супровід і код-рев'ю та зменшує кількість помилок у командній розробці.
+     
+     	
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     5 ВИКОРИСТАНІ ДЖЕРЕЛА
+1. PHP Manual: Type declarations [Електронний ресурс] / The PHP Group. – URL: https://www.php.net/manual/en/language.types.declarations.php (дата звернення: 23.10.2026).
+2. phpDocumentor: Guides. Docblocks [Електронний ресурс] / phpDocumentor Team. – URL: https://docs.phpdoc.org/ (дата звернення: 23.10.2026).
+3. PHPUnit Manual [Електронний ресурс] / S. Bergmann. – URL: https://docs.phpunit.de/ (дата звернення: 23.10.2026).
+4. PSR-1: Basic Coding Standard [Електронний ресурс] / PHP Framework Interop Group. – URL: https://www.php-fig.org/psr/psr-1/ (дата звернення: 23.10.2026).
+5. PSR-12: Extended Coding Style [Електронний ресурс] / PHP Framework Interop Group. – Режим доступу: https://www.php-fig.org/psr/psr-12/ (дата звернення: 23.10.2026).
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     ДОДАТОК А
+     Відеозапис
+     Відеозапис доповіді: https://youtu.be/N8JwAJoUPRs?si=y54iKxhrP-tNE1rd
+     
+     Хронологічний опис відеозапису:
+     
+     00:01 - Вступ. Чому важливо дотримуватися правил
+     00:46 - Особливості мови та стандарти PSR
+     01:27 - Структура проєкту та форматування
+     02:46 - Іменування
+     03:19 - Коментарі та PHPDoc
+     04:42 - Інструменти перевірки коду та статичний аналіз
+     05:28 - TDD
+     06:13 - Автоматизація та CI/CD
+     06:56 - Порівняння прикладів коду
+     07:38 - Підсумки та рекомендації
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     ДОДАТОК Б
+     Слайди презентації
+     
+
+     Рисунок Б.1 — Правила оформлення програмного коду в мові PHP
+
+     Рисунок Б.2 — PHP: особливості мови та стандарти PSR
+
+     Рисунок Б.3 — Структура коду: проєкт, файли, модулі
+
+     Рисунок Б.4 — Форматування: відступи, дужки, довжина рядків
+
+     Рисунок Б.5 — Іменування змінних, функцій і класів
+
+     Рисунок Б.6 — Коментарі: коли і навіщо
+
+     Рисунок Б.7 — Документування коду: PHPDoc
+
+     Рисунок Б.8 — Конвенції та інструменти перевірки стилю
+
+     Рисунок Б.9 — Test-Driven Development та організація тестів
+
+     Рисунок Б.10 — Автоматизація підтримки якості коду
+
+     Рисунок Б.11 — Приклади оформлення: аналіз та обговорення
+
+     Рисунок Б.12 — Висновки та кроки до впровадження
+     
+     
+     
+     
+     ДОДАТОК В
+     В.1 Рекомендація 1: Дотримуйтесь стандартної структури файлу
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+      
+      1  namespace App\Service;
+       2 
+       3  use App\Entity\Order;
+       4  use InvalidArgumentException;
+       5 
+       6  final class OrderValidator
+       7  {
+       8      // ...
+       9  }
+      
+     В.2 Рекомендація 2: Вмикайте строгу типізацію та вказуйте типи скрізь
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  namespace App\Entity;
+       2 
+       3  final class Product
+       4  {
+       5      private string $name;
+       6      private float $price;
+       7 
+       8      public function __construct(string $name, float $price)
+       9      {
+      10          $this->name = $name;
+      11          $this->price = $price;
+      12      }
+      13 
+      14      public function getName(): string
+      15      {
+      16          return $this->name;
+      17      }
+      18 
+      19      public function getPrice(): float
+      20      {
+      21          return $this->price;
+      22      }
+      23  }
+      
+     В.3 Рекомендація 3: Використовуйте осмислені назви
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  // Приклад поганого оформлення:
+       2  public function calc(float $a, float $b): float
+       3  {
+       4      return $a * (1 - $b / 100);
+       5  }
+       6 
+       7  // Приклад, що відповідає стандарту:
+       8  public function applyDiscount(float $price, float $percent): float
+       9  {
+      10      return $price * (1 - $percent / 100);
+      11  }
+      
+     В.4 Рекомендація 4: Відступи, довжина рядка, фігурні дужки
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  // Приклад (сигнатура вміщається в один рядок, тому її не переносять):
+       2  namespace App\Service;
+       3 
+       4  final class PriceCalculator
+       5  {
+       6      public function applyDiscount(float $price, float $percent): float
+       7      {
+       8          return $price * (1 - $percent / 100);
+       9      }
+      10  }
+      11 
+      12  // Приклад багаторядкової сигнатури (коли параметрів багато):
+      13  public function createInvoice(
+      14      Customer $customer,
+      15      array $items,
+      16      float $discountPercent,
+      17      string $currency
+      18  ): Invoice {
+      19      // ...
+      20  }
+      
+     В.5 Рекомендація 5: Оголошуйте класи як final
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  final class PriceCalculator
+       2  {
+       3      // ...
+       4  }
+      
+     В.6 Рекомендація 6: Керуючі конструкції
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  public function applyDiscount(float $price, float $percent): float
+       2  {
+       3      if ($percent < 0.0 || $percent > 100.0) {
+       4          throw new InvalidArgumentException('Percent must be between 0 and 100.');
+       5      }
+       6 
+       7      return $price * (1 - $percent / 100);
+       8  }
+      
+     В.7 Рекомендація 7: PHPDoc без дублювання очевидного
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  // Приклад поганого оформлення:
+       2  /**
+       3   * Повертає ім'я.
+       4   * @return string
+       5   */
+       6  public function getName(): string
+       7  {
+       8      return $this->name;
+       9  }
+      10 
+      11  // Приклад, що відповідає стандарту:
+      12  /**
+      13   * Розраховує підсумкову вартість замовлення з урахуванням знижки.
+      14   *
+      15   * @param OrderItem[] $items   Позиції замовлення (не порожній масив)
+      16   * @param float       $percent Відсоток знижки від 0 до 100
+      17   *
+      18   * @return float Підсумкова сума в гривнях
+      19   *
+      20   * @throws InvalidArgumentException Якщо знижка виходить за межі 0-100
+      21   *
+      22   * @see PriceCalculator::applyDiscount()
+      23   */
+      24  public function calculateTotal(array $items, float $percent = 0.0): float
+      25  {
+      26      // ...
+      27  }
+      
+     В.8 Рекомендація 8: Модульні тести за схемою Arrange-Act-Assert
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  namespace App\Tests\Service;
+       2 
+       3  use App\Service\PriceCalculator;
+       4  use InvalidArgumentException;
+       5  use PHPUnit\Framework\TestCase;
+       6 
+       7  final class PriceCalculatorTest extends TestCase
+       8  {
+       9      public function testApplyDiscountReducesPriceByGivenPercent(): void
+      10      {
+      11          // Arrange
+      12          $calculator = new PriceCalculator();
+      13 
+      14          // Act
+      15          $result = $calculator->applyDiscount(200.0, 10.0);
+      16 
+      17          // Assert
+      18          $this->assertEqualsWithDelta(180.0, $result, 0.001);
+      19      }
+      20 
+      21      public function testApplyDiscountThrowsExceptionForNegativePercent(): void
+      22      {
+      23          $this->expectException(InvalidArgumentException::class);
+      24 
+      25          (new PriceCalculator())->applyDiscount(200.0, -5.0);
+      26      }
+      27  }
+      
+     В.9 Приклад використання PHP_CodeSniffer
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  vendor/bin/phpcs --standard=PSR12 src tests
+      2  vendor/bin/phpcbf --standard=PSR12 src tests
+      
+     В.10 Приклад налаштування PHP-CS-Fixer
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  <?php
+       2 
+       3  declare(strict_types=1);
+       4 
+       5  $finder = PhpCsFixer\Finder::create()
+       6      ->in([__DIR__ . '/src', __DIR__ . '/tests']);
+       7 
+       8  return (new PhpCsFixer\Config())
+       9      ->setRiskyAllowed(true)
+      10      ->setRules([
+      11          '@PSR12' => true,
+      12          'declare_strict_types' => true,
+      13      ])
+      14      ->setFinder($finder);
+      15 
+      16  Запуск: vendor/bin/php-cs-fixer fix
+      
+     В.11 Приклад використання PHPStan
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  vendor/bin/phpstan analyse src tests --level=8
+      
+     В.12 Приклад використання PHPUnit
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+      1  vendor/bin/phpunit
+      
+     В.13 Приклад налаштування Composer scripts
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  {
+       2      "scripts": {
+       3          "cs:check": "phpcs --standard=PSR12 src tests",
+       4          "cs:fix": "phpcbf --standard=PSR12 src tests",
+       5          "stan": "phpstan analyse src tests --level=8",
+       6          "test": "phpunit"
+       7      }
+       8  }
+       9 
+      10  Запуск: composer cs:check, composer stan, composer test
+      
+     В.14 Приклад програмного коду до рефакторинґу
+     GitHub репозиторій: https://github.com/NureStronArtem/ark-pzpi-24-5-stron-artem/blob/main/Pract1/code-examples-code-conventions.php
+     
+       1  <?php
+       2  namespace App;
+       3 
+       4  class price_calc
+       5  {
+       6      var $n;
+       7 
+       8      function __construct($n){ $this->n=$n; }
+       9 
+      10      /**
+      11       * Повертає ім'я.
+      12       * @return string
+      13       */
+      14      function getName() { return $this->n; }
+      15 
+      16      function calc($a,$b)
+      17      {
+      18          if($b<0 || $b>100){ throw new \Exception('bad'); }
+      19          return $a*(1-$b/100);
+      20      }
+      21  }
+      22  ?>
+      
+      
+     
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
